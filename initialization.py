@@ -1,6 +1,8 @@
 import sqlite3
 from datetime import datetime
 
+from Users import Users
+
 def create_tables(cursor):
 
   with open('sql_tables.sql') as sql_file:
@@ -39,12 +41,38 @@ def insert_compentencies(cursor):
     ;'''
 
     cursor.execute(insert_sql, (item, date_time_str))
-    cursor.connection.commit()
-  
-  
+  cursor.connection.commit()
+
+
+def compentency_query(cursor):
+    select_sql = '''
+        SELECT count(name) FROM Compentencies;
+    '''
+
+    count = cursor.execute(select_sql)
+
+    for row in count:
+        if row[0] == 0:
+            insert_compentencies(cursor)
+
+
+def new_manager(cursor):
+  new_manager = Users()
+  select_sql = '''
+      SELECT count(user_id) FROM Users;
+  '''
+
+  count = cursor.execute(select_sql)
+
+  for row in count:
+      if row[0] == 0:
+          new_manager.set_all("Fred", "Ward", "3982931039", "fredward1@gmail.com", "fw123", new_manager.get_date(), "Manager", new_manager.get_date())
+          new_manager.save_user(cursor)
+
 
 connection = sqlite3.connect('compentancy.db')
 cursor = connection.cursor()
 
 create_tables(cursor)
-insert_compentencies(cursor)
+compentency_query(cursor)
+new_manager(cursor)

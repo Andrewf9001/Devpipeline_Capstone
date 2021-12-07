@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS Users (
 CREATE TABLE IF NOT EXISTS Compentencies (
     comp_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    date_created TEXT
+    date_created TEXT,
+    active INTEGER DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS Assessments (
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS Assessments (
     comp_id INTEGER,
     name TEXT NOT NULL,
     date_created TEXT NOT NULL,
+    active INTEGER DEFAULT 1,
     FOREIGN KEY (comp_id)
         REFERENCES Competencies (comp_id)
 );
@@ -38,4 +40,3 @@ CREATE TABLE IF NOT EXISTS AssessmentResults (
     FOREIGN KEY (comp_id)
         REFERENCES Competencies (comp_id)
 );
-

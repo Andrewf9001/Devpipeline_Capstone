@@ -56,8 +56,8 @@ class Users:
             row = cursor.execute(select_sql, (valid_password, email)).fetchone()
 
             return (row != None)
-        else:
-            print("Incorrect Password")
+        # else:
+        #     print("\nIncorrect Password\n")
 
 
     def change_email(self, new_email):
@@ -78,10 +78,12 @@ class Users:
         new_user_id = cursor.execute('SELECT last_insert_rowid()').fetchone()
         self.user_id = new_user_id[0]
 
+
     def print_me(self):
         print(f'{self.user_id} {self.last_name}, {self.first_name}')
         print(f'  {self.email}')
         print(f'  Created: {self.date_created}')
+
 
     def load(self, cursor):
         select_sql = '''
@@ -104,15 +106,51 @@ class Users:
         self.hire_date = row[6]
         self.user_type = row[7]
 
-# class User(Users):
-#     def change_name(self, new_first, new_last):
-#         self.first_name = new_first
-#         self.last_name = new_last
 
-#     def view_compentency_list(self):
-#         select_sql = '''
-#             SELECT 
-#         '''
+class User(Users):
+    def change_name(self, new_first, new_last, id, cursor):
+        update_sql = '''
+            UPDATE Users
+            SET first_name = ?, last_name = ?
+            WHERE user_id = ?
+        '''
+
+        cursor.execute(update_sql, (new_first, new_last, id))
+        connection.commit()
+
+    # def change_email(self, new_email, id, cursor):
+    #     update_sql = '''
+    #         UPDATE Users
+    #         SET email = ?
+    #         WHERE user_id = ?
+    #     '''
+
+    #     cursor.execute(update_sql, (new_email, id))
+    #     connection.commit()
+
+    # def change_password(self, cursor):
+    #     update_sql = '''
+    #         UPDATE Users
+    #         SET password = ?
+    #         WHERE user_id = ?
+    #     '''
+
+    #     cursor.execute(update_sql, (new_email, id))
+    #     connection.commit()
+
+
+    def view_compentency_list(self, cursor):
+        select_sql = '''
+            SELECT * FROM AssessmentResults WHERE user_id = ?
+        '''
+        rows = cursor.execute(select_sql, (self.user_id, ))
+
+        # for row in rows:
+        #     if row == None:
+        #         print("No compentency assessments yet")
+        #     else:
+        #         print("List of shit")
+
 
     # change email and change password inherited
 
@@ -122,16 +160,30 @@ class Manager(Users):
 connection = sqlite3.connect('compentancy.db')
 cursor = connection.cursor()
 
-new_user = Users()
-new_user.set_all("Andrew", "Fletcher", "8019349230", "af@test.com", "123", new_user.get_date(), "Manager", new_user.get_date())
-new_user.save_user(cursor)
-new_user.load(cursor)
-new_user.print_me()
+# new_user = Users()
+# name_change = User()
 
-new_user.set_all("Adam", "Armstrong", "2349280958", "aj@test.com", "234", new_user.get_date())
-new_user.save_user(cursor)
-new_user.load(cursor)
-new_user.print_me()
+# new_user.set_all("Andrew", "Fletcher", "8019349230", "af@test.com", "123", new_user.get_date(), "Manager", new_user.get_date())
+# new_user.save_user(cursor)
+# new_user.load(cursor)
+# new_user.print_me()
+
+# name_change.set_all("Test", "Namechange", "8024039342", "test@test.com", "test", new_user.get_date())
+# name_change.change_name('Josh', 'Dielmann', 3, cursor)
+# name_change.change_email("jd@test.com", 3, cursor)
+# name_change.load(cursor)
+# print(name_change.view_compentency_list(cursor))
+# name_change.save_user(cursor)
+# name_change.load(cursor)
+# name_change.print_me()
+
+
+
+# new_user.set_all("Adam", "Armstrong", "2349280958", "aj@test.com", "234", new_user.get_date())
+# new_user.save_user(cursor)
+# new_user.load(cursor)
+# new_user.print_me()
+
 # print(new_user.check_password(new_user.email, "123", cursor))
 # new_user.change_password("1234")
 # print(new_user.check_password("af@test.com", "1234", cursor))
